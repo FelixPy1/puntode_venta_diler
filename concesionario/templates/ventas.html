@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mis Ventas | Margarita Autos</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="/concesionario/static/css/Dashboard-Vendedor.css"/>
+  <style>
+    :root {
+      --color-primary: #2563eb;
+      --color-success: #10b981;
+      --color-warning: #f59e0b;
+      --color-danger: #ef4444;
+      --color-background: #f8fafc;
+      --color-card: #ffffff;
+      --color-text: #1e293b;
+      --color-text-muted: #64748b;
+    }
+    [data-theme="dark"] {
+      --color-background: #0f172a;
+      --color-card: #1e293b;
+      --color-text: #f1f5f9;
+      --color-text-muted: #94a3b8;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--color-background);
+      color: var(--color-text);
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+    header {
+      background: var(--color-card);
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .page-title {
+      margin: 1.5rem 0 0.5rem;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    .subtitle {
+      color: var(--color-text-muted);
+      margin-bottom: 1.5rem;
+    }
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      background: var(--color-card);
+      padding: 1rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 180px;
+    }
+    .filter-group label {
+      font-size: 0.875rem;
+      margin-bottom: 0.4rem;
+      color: var(--color-text-muted);
+    }
+    input, select {
+      padding: 0.65rem 1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+    }
+    [data-theme="dark"] input, [data-theme="dark"] select {
+      background: #334155;
+      color: white;
+      border-color: #475569;
+    }
+    .btn {
+      padding: 0.65rem 1.25rem;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--color-primary);
+      color: var(--color-primary);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--color-card);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    th, td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    [data-theme="dark"] th, [data-theme="dark"] td {
+      border-bottom-color: #475569;
+    }
+    th {
+      background: var(--color-primary);
+      color: white;
+      font-weight: 600;
+    }
+    tr:hover {
+      background: rgba(37, 99, 235, 0.05);
+    }
+    .status {
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .status-completada { background: #d1fae5; color: #065f46; }
+    .status-pendiente   { background: #fef3c7; color: #92400e; }
+    .status-anulada     { background: #fee2e2; color: #991b1b; }
+    .action-btn {
+      background: none;
+      border: none;
+      color: var(--color-primary);
+      cursor: pointer;
+      font-size: 1.1rem;
+      margin: 0 0.4rem;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 5rem 1rem;
+      color: var(--color-text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra superior (sin enlace a Dashboard) -->
+  <header>
+    <div style="display:flex; align-items:center; gap:1rem;">
+      <i class="fas fa-car" style="font-size:1.6rem; color:var(--color-primary);"></i>
+      <h2 style="margin:0; font-size:1.35rem;">Margarita Autos</h2>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:1.5rem;">
+      <div id="toggleTheme" style="cursor:pointer;">
+        <i class="fas fa-moon"></i>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.8rem;">
+        <div style="text-align:right;">
+          <div id="userName">Jisleny Mirella</div>
+          <div style="font-size:0.85rem; color:var(--color-text-muted);">Vendedor</div>
+        </div>
+        <div style="width:38px; height:38px; background:var(--color-primary); color:white; border-radius:50%; display:grid; place-items:center; font-weight:600;">
+          JM
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <h1 class="page-title">Mis Ventas</h1>
+    <div class="subtitle">Historial completo de las ventas que he realizado • <span id="currentDate"></span></div>
+
+    <!-- Filtros -->
+    <div class="filters">
+      <div class="filter-group">
+        <label>Desde</label>
+        <input type="date" id="fechaDesde">
+      </div>
+      <div class="filter-group">
+        <label>Hasta</label>
+        <input type="date" id="fechaHasta">
+      </div>
+      <div class="filter-group">
+        <label>Estado</label>
+        <select id="estadoFiltro">
+          <option value="">Todos</option>
+          <option value="completada">Completada</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="anulada">Anulada</option>
+        </select>
+      </div>
+      <div class="filter-group" style="align-self: flex-end;">
+        <button class="btn btn-primary" onclick="filtrarVentas()">
+          <i class="fas fa-filter"></i> Filtrar
+        </button>
+        <button class="btn btn-outline" onclick="limpiarFiltros()">
+          Limpiar
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabla de ventas -->
+    <table id="ventasTable">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Cliente</th>
+          <th>Vehículo</th>
+          <th>Monto</th>
+          <th>Comisión</th>
+          <th>Estado</th>
+          <th>Factura</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="ventasBody">
+        <tr>
+          <td colspan="8" class="empty-state">
+            Cargando tus ventas...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Estado vacío -->
+    <div id="emptyState" class="empty-state" style="display:none;">
+      <i class="fas fa-folder-open" style="font-size:3.5rem; opacity:0.4; margin-bottom:1rem;"></i>
+      <p>No se encontraron ventas con los filtros seleccionados.</p>
+      <button class="btn btn-primary" onclick="limpiarFiltros()">Ver todas las ventas</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Fecha actual
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-DO', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // Modo oscuro
+    document.getElementById('toggleTheme').addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
+    // Datos de ejemplo (reemplazar con fetch al backend)
+    const misVentasEjemplo = [
+      {
+        id: 1,
+        fecha: "2026-02-14",
+        cliente: "Carlos Ramírez",
+        vehiculo: "Toyota Corolla 2025",
+        monto: 1850000,
+        comision: 92500,
+        estado: "completada",
+        facturaId: "FAC-2026-0023"
+      },
+      {
+        id: 2,
+        fecha: "2026-02-10",
+        cliente: "María López",
+        vehiculo: "Honda CR-V EX 2024",
+        monto: 2450000,
+        comision: 122500,
+        estado: "completada",
+        facturaId: "FAC-2026-0019"
+      },
+      {
+        id: 3,
+        fecha: "2026-02-05",
+        cliente: "Pedro Gómez",
+        vehiculo: "Kia Sportage 2025",
+        monto: 2100000,
+        comision: 105000,
+        estado: "pendiente",
+        facturaId: null
+      }
+    ];
+
+    function renderVentas(ventas) {
+      const tbody = document.getElementById('ventasBody');
+      tbody.innerHTML = '';
+
+      if (ventas.length === 0) {
+        document.getElementById('emptyState').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('emptyState').style.display = 'none';
+
+      ventas.forEach(v => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${new Date(v.fecha).toLocaleDateString('es-DO')}</td>
+          <td>${v.cliente}</td>
+          <td>${v.vehiculo}</td>
+          <td>RD$ ${v.monto.toLocaleString('es-DO')}</td>
+          <td>RD$ ${v.comision.toLocaleString('es-DO')}</td>
+          <td>
+            <span class="status status-${v.estado}">
+              ${v.estado.charAt(0).toUpperCase() + v.estado.slice(1)}
+            </span>
+          </td>
+          <td>
+            ${v.facturaId ? `<a href="#" style="color:var(--color-primary);">Ver ${v.facturaId}</a>` : '—'}
+          </td>
+          <td>
+            <button class="action-btn" title="Ver detalle"><i class="fas fa-eye"></i></button>
+            ${v.estado === 'completada' ? '<button class="action-btn" title="Descargar factura"><i class="fas fa-file-pdf"></i></button>' : ''}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filtrarVentas() {
+      let filtradas = [...misVentasEjemplo];
+
+      const desde = document.getElementById('fechaDesde').value;
+      const hasta = document.getElementById('fechaHasta').value;
+      const estado = document.getElementById('estadoFiltro').value;
+
+      if (desde) filtradas = filtradas.filter(v => v.fecha >= desde);
+      if (hasta) filtradas = filtradas.filter(v => v.fecha <= hasta);
+      if (estado) filtradas = filtradas.filter(v => v.estado === estado);
+
+      renderVentas(filtradas);
+    }
+
+    function limpiarFiltros() {
+      document.getElementById('fechaDesde').value = '';
+      document.getElementById('fechaHasta').value = '';
+      document.getElementById('estadoFiltro').value = '';
+      renderVentas(misVentasEjemplo);
+    }
+
+    // Carga inicial
+    renderVentas(misVentasEjemplo);
+  </script>
+</body>
+</html>

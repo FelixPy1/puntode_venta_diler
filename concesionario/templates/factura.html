@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Factura - Margarita Autos</title>
+  <style>
+    :root {
+      --primary: #005187;
+      --primary-dark: #003d6a;
+      --primary-light: #4d82bc;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --bg: #f9fafb;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+
+    .invoice-container {
+      max-width: 850px;
+      margin: 0 auto;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 2.2rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .two-columns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      padding: 2rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h2 {
+      color: var(--primary);
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 2.5rem 0;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: rgba(0,81,135,0.06);
+      color: var(--primary);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+
+    .totales {
+      padding: 2rem 2.5rem;
+      background: rgba(0,81,135,0.03);
+      text-align: right;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 12px 0;
+      font-size: 1.1rem;
+    }
+
+    .grand-total {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      border-top: 2px solid var(--primary);
+      padding-top: 15px;
+      margin-top: 15px;
+    }
+
+    .footer {
+      padding: 2rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-print {
+      display: block;
+      margin: 2.5rem auto;
+      padding: 14px 32px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-print:hover {
+      background: var(--primary-dark);
+    }
+
+    @media print {
+      body { background: white; padding: 0; margin: 0; }
+      .invoice-container { box-shadow: none; border: none; border-radius: 0; }
+      .btn-print { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .two-columns { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="invoice-container">
+    <div class="header">
+      <h1>Margarita Autos</h1>
+      <div class="invoice-info">
+        <p><strong>Factura N°:</strong> <span id="numeroFactura">[NÚMERO DE FACTURA]</span></p>
+        <p><strong>Fecha:</strong> <span id="fechaFactura">[FECHA]</span></p>
+      </div>
+    </div>
+
+    <div class="two-columns">
+      <div>
+        <h2>Emisor</h2>
+        <p><strong>Margarita Autos, S.R.L.</strong></p>
+        <p>Av. John F. Kennedy #123, Santo Domingo Este</p>
+        <p>RNC: 131-45678-9</p>
+        <p>Tel: (809) 555-1234 | info@margaritaautos.com.do</p>
+      </div>
+
+      <div>
+        <h2>Cliente</h2>
+        <p><strong id="clienteNombre">[NOMBRE DEL CLIENTE]</strong></p>
+        <p>Cédula: <span id="clienteCedula">[CÉDULA]</span></p>
+        <p>Tel: <span id="clienteTelefono">[TELÉFONO]</span></p>
+        <p><span id="clienteDireccion">[DIRECCIÓN]</span></p>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Descripción</th>
+          <th>Cantidad</th>
+          <th>Precio Unitario</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="itemsTabla">
+        <!-- Los ítems se agregarán aquí con JS si los tienes -->
+        <tr>
+          <td>[DESCRIPCIÓN DEL VEHÍCULO / PRODUCTO]</td>
+          <td>[CANTIDAD]</td>
+          <td>[PRECIO UNITARIO]</td>
+          <td>[TOTAL ÍTEM]</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="totales">
+      <div class="total-row">
+        <span>Subtotal</span>
+        <span id="subtotal">[SUBTOTAL]</span>
+      </div>
+      <div class="total-row">
+        <span>Descuento</span>
+        <span id="descuento">[DESCUENTO]</span>
+      </div>
+      <div class="total-row">
+        <span>ITBIS (18%)</span>
+        <span id="itbis">[ITBIS]</span>
+      </div>
+      <div class="total-row grand-total">
+        <span>Total a pagar</span>
+        <span id="total">[TOTAL]</span>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Vendedor: <span id="vendedorNombre">[NOMBRE VENDEDOR]</span> • Código: <span id="vendedorCodigo">[CÓDIGO]</span></p>
+      <p>¡Gracias por elegir Margarita Autos! • www.margaritaautos.com.do</p>
+      <p>Factura válida como comprobante fiscal según normas de DGII</p>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin:3rem 0;">
+    <button class="btn-print" onclick="window.print()">Imprimir / Guardar como PDF</button>
+  </div>
+
+  <script>
+    // Aquí puedes poner el código que rellene los campos cuando tengas los datos reales
+    // Ejemplo de cómo llenarlo dinámicamente:
+    /*
+    document.getElementById('numeroFactura').textContent = "FAC-2026-00123";
+    document.getElementById('fechaFactura').textContent = "19 de febrero de 2026";
+    document.getElementById('clienteNombre').textContent = "Juan Miguel Pérez Gómez";
+    // ... y así con todos los demás
+    */
+
+    // Por ahora está en blanco como pediste
+  </script>
+</body>
+</html>
