@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title> Panel de Administración</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="/concesionario/static/css/Dashboard-Admin.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <i class="fas fa-car"></i>
+        <span>Margarita Autos</span>
+      </div>
+    </div>
+
+    <div class="nav-list">
+      <div class="nav-item active" data-section="dashboard">
+        <i class="fas fa-chart-line"></i>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item" data-section="inventario">
+        <i class="fas fa-car"></i>
+        <span>Inventario</span>
+      </div>
+      <div class="nav-item" data-section="ventas">
+        <i class="fas fa-dollar-sign"></i>
+        <span>Ventas</span>
+      </div>
+      <div class="nav-item" data-section="vendedores">
+        <i class="fas fa-users"></i>
+        <span>Vendedores</span>
+      </div>
+      <div class="nav-item" data-section="facturas">
+        <i class="fas fa-file-invoice-dollar"></i>
+        <span>Facturación</span>
+      </div>
+    </div>
+
+    <div style="margin-top: auto; padding: 1.5rem;">
+      <div class="nav-item" id="toggleTheme">
+        <i class="fas fa-moon"></i>
+        <span>Modo oscuro</span>
+      </div>
+      <div class="nav-item" style="color: var(--color-danger);">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Cerrar sesión</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Contenido principal -->
+  <div class="main">
+    <header class="topbar">
+      <div style="font-weight: 600; font-size: 1.15rem;">Panel de Administración</div>
+
+      <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <div style="position: relative; cursor: pointer;">
+          <i class="fas fa-bell" style="font-size: 1.25rem; color: var(--color-text-muted);"></i>
+          <span style="position: absolute; top: -6px; right: -6px; background: var(--color-danger); color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%;">0</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="text-align: right;">
+            <div id="userName" style="font-weight: 600;">Cargando...</div>
+            <div style="font-size: 0.875rem; color: var(--color-text-muted);">Administrador</div>
+          </div>
+          <div style="width: 42px; height: 42px; background: var(--color-primary); border-radius: 50%; color: white; display: grid; place-items: center; font-weight: 600;" id="userInitials">
+            --
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- Dashboard -->
+      <div id="dashboard" class="section active">
+        <h1 class="page-title">Dashboard</h1>
+        <div class="subtitle">Resumen general • <span id="currentDate">Cargando...</span></div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Vehículos en inventario</div>
+            <div class="stat-value" id="totalVehicles">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Ventas del mes</div>
+            <div class="stat-value" id="monthlySales">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Ingresos del mes</div>
+            <div class="stat-value" id="monthlyRevenue">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Vendedores activos</div>
+            <div class="stat-value" id="activeSellers">—</div>
+          </div>
+        </div>
+
+        <div class="section-title">Vehículos con stock bajo</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Modelo</th>
+              <th>Marca</th>
+              <th>Stock</th>
+              <th>Precio</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="lowStockTable">
+            <tr><td colspan="5" style="text-align:center;padding:2rem;">Cargando datos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Inventario -->
+      <div id="inventario" class="section">
+        <h1 class="page-title">Inventario</h1>
+        <div class="subtitle">Gestión completa de vehículos</div>
+
+        <button style="background:var(--color-primary); color:white; padding:0.75rem 1.5rem; border:none; border-radius:0.5rem; cursor:pointer; margin-bottom:1.5rem;">
+          + Agregar vehículo
+        </button>
+
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Modelo</th>
+              <th>Marca</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="inventarioTable">
+            <tr><td colspan="7" style="text-align:center;padding:3rem;">Cargando inventario...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Ventas -->
+      <div id="ventas" class="section">
+        <h1 class="page-title">Ventas</h1>
+        <div class="subtitle">Registro y historial de ventas</div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Cliente</th>
+              <th>Vehículo</th>
+              <th>Vendedor</th>
+              <th>Total</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="ventasTable">
+            <tr><td colspan="6" style="text-align:center;padding:3rem;">Cargando ventas...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Vendedores -->
+      <div id="vendedores" class="section">
+        <h1 class="page-title">Vendedores</h1>
+        <div class="subtitle">Gestión del equipo de ventas</div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Ventas mes</th>
+              <th>Comisión</th>
+              <th>Meta</th>
+              <th>Progreso</th>
+            </tr>
+          </thead>
+          <tbody id="vendedoresTable">
+            <tr><td colspan="5" style="text-align:center;padding:3rem;">Cargando vendedores...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Facturación -->
+      <div id="facturas" class="section">
+        <h1 class="page-title">Facturación</h1>
+        <div class="subtitle">Generación y control de facturas</div>
+
+        <p style="text-align:center; padding:4rem; color:var(--color-text-muted);">
+          Aquí irá el módulo de facturas (listado, generar PDF, etc.)<br>
+          Puedes agregar un botón para "Nueva Factura" y una tabla similar a las anteriores.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Navegación entre secciones
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        if (!item.dataset.section) return;
+
+        // Quitar active de todos
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+
+        // Ocultar todas las secciones
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
+        // Mostrar la seleccionada
+        const sectionId = item.dataset.section;
+        const sectionEl = document.getElementById(sectionId);
+        if (sectionEl) sectionEl.classList.add('active');
+      });
+    });
+
+    // Fecha actual (puedes reemplazar con dato del backend)
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-DO', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // Usuario de ejemplo (reemplazar con datos reales)
+    document.getElementById('userName').textContent = "Jisleny Mirella";
+    document.getElementById('userInitials').textContent = "JM";
+
+    // Toggle modo oscuro
+    document.getElementById('toggleTheme').addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
+
+    // Cargar tema guardado
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  </script>
+</body>
+</html>

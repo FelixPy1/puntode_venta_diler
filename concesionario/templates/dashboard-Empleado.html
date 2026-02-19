@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mi Panel - Vendedor | Margarita Autos</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="/concesionario/static/css/Dashboard-Vendedor.css"/> 
+  <link rel="stylesheet" href="/concesionario/static/css/Dashboard-Empleado.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+   
+</head>
+<body>
+
+  <!-- Sidebar (enfocada para Vendedor) -->
+  <aside class="sidebar">
+    <div class="sidebar-header" style="padding:1.5rem; font-size:1.25rem; font-weight:700; display:flex; align-items:center; gap:0.75rem; color:var(--color-primary);">
+      <i class="fas fa-car"></i>
+      <span>Margarita Autos</span>
+    </div>
+
+    <div class="nav-list" style="margin-top:2rem;">
+      <div class="nav-item active" data-section="mi-dashboard">
+        <i class="fas fa-chart-line"></i>
+        <span>Mi Dashboard</span>
+      </div>
+      <div class="nav-item" data-section="vehiculos">
+        <i class="fas fa-car-side"></i>
+        <span>Vehículos disponibles</span>
+      </div>
+      <div class="nav-item" data-section="mis-ventas">
+        <i class="fas fa-hand-holding-dollar"></i>
+        <span>Mis Ventas</span>
+      </div>
+      <div class="nav-item" data-section="comisiones">
+        <i class="fas fa-coins"></i>
+        <span>Mis Comisiones</span>
+      </div>
+      <div class="nav-item" data-section="nueva-venta">
+        <i class="fas fa-plus-circle"></i>
+        <span>Nueva Venta</span>
+      </div>
+    </div>
+
+    <div style="margin-top: auto; padding: 1.5rem;">
+      <div class="nav-item" id="toggleTheme">
+        <i class="fas fa-moon"></i>
+        <span>Modo oscuro</span>
+      </div>
+      <div class="nav-item" style="color: var(--color-danger);">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Cerrar sesión</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Contenido principal -->
+  <div class="main">
+    <header class="topbar">
+      <div style="font-weight:600; font-size:1.2rem;">Hola, <span id="userFirstName">Vendedor</span></div>
+
+      <div style="display:flex; align-items:center; gap:1.5rem;">
+        <div style="position:relative; cursor:pointer;">
+          <i class="fas fa-bell" style="font-size:1.3rem; color:var(--color-text-muted);"></i>
+          <span style="position:absolute; top:-6px; right:-6px; background:var(--color-danger); color:white; font-size:0.7rem; padding:2px 6px; border-radius:50%;">0</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <div style="text-align:right;">
+            <div id="userName" style="font-weight:600;">Cargando...</div>
+            <div style="font-size:0.875rem; color:var(--color-text-muted);">Vendedor</div>
+          </div>
+          <div style="width:44px; height:44px; background:var(--color-primary); border-radius:50%; color:white; display:grid; place-items:center; font-weight:700;" id="userInitials">??</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- Mi Dashboard -->
+      <div id="mi-dashboard" class="section active">
+        <h1 class="page-title">Mi Dashboard</h1>
+        <div class="subtitle">Resumen personal • <span id="currentDate">Cargando...</span></div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Ventas este mes</div>
+            <div class="stat-value" id="myMonthlySales">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Comisión generada</div>
+            <div class="stat-value" id="myCommission">RD$ 0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Meta mensual</div>
+            <div class="stat-value" id="myGoal">RD$ 1,200,000</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Progreso</div>
+            <div class="stat-value" id="progressPercent">0%</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressBar" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin:2.5rem 0 1rem;">Mis últimas 5 ventas</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Cliente</th>
+              <th>Vehículo</th>
+              <th>Total</th>
+              <th>Comisión</th>
+            </tr>
+          </thead>
+          <tbody id="myRecentSales">
+            <tr><td colspan="5" style="text-align:center;padding:3rem;color:var(--color-text-muted);">Aún no tienes ventas registradas este mes</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Vehículos disponibles (solo lectura para vendedor) -->
+      <div id="vehiculos" class="section">
+        <h1 class="page-title">Vehículos Disponibles</h1>
+        <div class="subtitle">Lista actualizada de inventario para ventas</div>
+
+        <div style="margin:1.5rem 0;">
+          <input type="text" placeholder="Buscar modelo o marca..." style="padding:0.8rem 1rem; width:320px; border:1px solid #cbd5e1; border-radius:0.5rem;">
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Modelo</th>
+              <th>Marca</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="availableVehiclesTable">
+            <tr><td colspan="6" style="text-align:center;padding:3rem;">Cargando vehículos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mis Ventas -->
+      <div id="mis-ventas" class="section">
+        <h1 class="page-title">Mis Ventas</h1>
+        <div class="subtitle">Historial completo de mis operaciones</div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Cliente</th>
+              <th>Vehículo</th>
+              <th>Total</th>
+              <th>Comisión</th>
+              <th>Factura</th>
+            </tr>
+          </thead>
+          <tbody id="mySalesTable">
+            <tr><td colspan="6" style="text-align:center;padding:3rem;">Cargando historial...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mis Comisiones -->
+      <div id="comisiones" class="section">
+        <h1 class="page-title">Mis Comisiones</h1>
+        <div class="subtitle">Detalle de comisiones acumuladas</div>
+
+        <div class="stats-grid" style="margin-top:2rem;">
+          <div class="stat-card">
+            <div class="stat-label">Comisión mes actual</div>
+            <div class="stat-value" style="color:var(--color-success);" id="commissionThisMonth">RD$ 0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Comisión año actual</div>
+            <div class="stat-value" id="commissionThisYear">RD$ 0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total histórico</div>
+            <div class="stat-value" id="commissionTotal">RD$ 0</div>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin:2.5rem 0 1rem;">Desglose por mes (últimos 6 meses)</div>
+        <canvas id="commissionChart" height="100"></canvas>
+      </div>
+
+      <!-- Nueva Venta (simplificada) -->
+      <div id="nueva-venta" class="section">
+        <h1 class="page-title">Registrar Nueva Venta</h1>
+        <div style="max-width:680px; margin:2rem auto; background:var(--color-card); padding:2rem; border-radius:0.75rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);">
+          <p style="text-align:center; color:var(--color-text-muted); margin-bottom:2rem;">
+            Formulario de registro de venta (se conectará con el backend)
+          </p>
+          <!-- Aquí irían los campos: seleccionar vehículo, cliente, aplicar descuento si está autorizado, etc. -->
+          <div style="text-align:center; margin-top:3rem; color:#64748b;">
+            (Implementación completa pendiente – integración con API de backend)
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Navegación
+    document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(item.dataset.section).classList.add('active');
+      });
+    });
+
+    // Fecha
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-DO', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // Ejemplo datos vendedor
+    document.getElementById('userName').textContent = "Jisleny Mirella";
+    document.getElementById('userFirstName').textContent = "Jisleny";
+    document.getElementById('userInitials').textContent = "JM";
+
+    // Modo oscuro
+    const toggle = document.getElementById('toggleTheme');
+    toggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
+    // Ejemplo estático de progreso (reemplazar con datos reales)
+    setTimeout(() => {
+      const progress = 68;
+      document.getElementById('progressPercent').textContent = `${progress}%`;
+      document.getElementById('progressBar').style.width = `${progress}%`;
+    }, 800);
+  </script>
+</body>
+</html>
