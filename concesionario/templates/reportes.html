@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reportes de Empleados - Margarita Autos</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --primary: #005187;
+      --primary-dark: #003d6a;
+      --primary-light: #4d82bc;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #111827;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --danger: #dc2626;
+      --shadow: 0 6px 20px rgba(0,81,135,0.08);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.5s, color 0.5s;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0;
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    select, button {
+      padding: 0.7rem 1.2rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-weight: 600;
+    }
+
+    button:hover { background: var(--primary-dark); }
+
+    .container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.8rem;
+      margin-bottom: 3rem;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 1.8rem;
+      border: 1px solid var(--border);
+      text-align: center;
+      box-shadow: var(--shadow);
+      transition: transform 0.25s;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .kpi-value {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .kpi-label {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    th, td {
+      padding: 1.2rem 1.5rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: rgba(0,81,135,0.05);
+      color: var(--primary);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    th:hover { background: rgba(0,81,135,0.1); }
+
+    .progress-container {
+      background: #e5e7eb;
+      border-radius: 999px;
+      height: 12px;
+      overflow: hidden;
+      margin-top: 0.6rem;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 999px;
+      width: 0%;
+      transition: width 1s ease;
+    }
+
+    .status {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .cumplida { background: #ecfdf5; color: var(--success); }
+    .pendiente { background: #fef2f2; color: var(--danger); }
+
+    #chartContainer {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-top: 3rem;
+      box-shadow: var(--shadow);
+    }
+
+    @media print {
+      .controls, header button { display: none; }
+      body { background: white; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Reportes de Empleados</h1>
+    <div class="controls">
+      <select id="mesFiltro">
+        <option value="">Todos los meses</option>
+        <option value="Febrero">Febrero 2026</option>
+        <option value="Enero">Enero 2026</option>
+      </select>
+      <select id="chartType">
+        <option value="doughnut">Doughnut</option>
+        <option value="radar">Radar</option>
+        <option value="bar">Barras</option>
+      </select>
+      <button onclick="window.print()">Imprimir / PDF</button>
+      <button onclick="toggleTheme()">Modo Oscuro</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-value" id="totalVentasEquipo">—</div>
+        <div class="kpi-label">Ventas total equipo (mes)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value" id="comisionTotalEquipo">$ —</div>
+        <div class="kpi-label">Comisión pagada (mes)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-value" id="cumplimientoPromedio">—%</div>
+        <div class="kpi-label">Cumplimiento promedio metas</div>
+      </div>
+    </div>
+
+    <table id="reporteTabla">
+      <thead>
+        <tr>
+          <th onclick="ordenar(0)">Vendedor</th>
+          <th onclick="ordenar(1)">Ventas Mes</th>
+          <th onclick="ordenar(2)">Comisión</th>
+          <th onclick="ordenar(3)">Meta</th>
+          <th onclick="ordenar(4)">Progreso</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="tablaBody"></tbody>
+    </table>
+
+    <div id="chartContainer">
+      <canvas id="ventasChart" height="300"></canvas>
+    </div>
+  </div>
+
+  <script>
+    // Datos de ejemplo
+    let empleados = [
+      { nombre: "María López", ventas: 9, comision: 5340, meta: 12, progreso: 75 },
+      { nombre: "Carlos Ruiz", ventas: 6, comision: 3480, meta: 10, progreso: 60 },
+      { nombre: "Laura Méndez", ventas: 11, comision: 6820, meta: 12, progreso: 92 },
+      { nombre: "Pedro Gómez", ventas: 4, comision: 2320, meta: 8, progreso: 50 },
+      { nombre: "Ana Torres", ventas: 8, comision: 4800, meta: 10, progreso: 80 }
+    ];
+
+    let chart;
+
+    function cargarReporte() {
+      const tbody = document.getElementById('tablaBody');
+      tbody.innerHTML = '';
+
+      let totalVentas = 0, totalComision = 0, sumaProgreso = 0;
+
+      empleados.forEach(emp => {
+        totalVentas += emp.ventas;
+        totalComision += emp.comision;
+        sumaProgreso += emp.progreso;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${emp.nombre}</td>
+          <td>${emp.ventas}</td>
+          <td>$${emp.comision.toLocaleString('es-DO')}</td>
+          <td>${emp.meta}</td>
+          <td>
+            <div class="progress-container">
+              <div class="progress-bar" style="width:${emp.progreso}%"></div>
+            </div>
+            ${emp.progreso}%
+          </td>
+          <td><span class="status ${emp.progreso >= 100 ? 'cumplida' : 'pendiente'}">
+            ${emp.progreso >= 100 ? 'Cumplida' : 'Pendiente'}
+          </span></td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      document.getElementById('totalVentasEquipo').textContent = totalVentas;
+      document.getElementById('comisionTotalEquipo').textContent = '$' + totalComision.toLocaleString('es-DO');
+      document.getElementById('cumplimientoPromedio').textContent = Math.round(sumaProgreso / empleados.length) + '%';
+
+      actualizarGrafico();
+    }
+
+    function actualizarGrafico() {
+      const tipo = document.getElementById('chartType').value;
+      const colores = ['rgba(0,81,135,0.7)', 'rgba(77,130,188,0.7)', 'rgba(132,182,244,0.7)', 'rgba(0,196,180,0.7)', 'rgba(0,81,135,0.7)'];
+
+      if (chart) chart.destroy();
+      const ctx = document.getElementById('ventasChart').getContext('2d');
+      chart = new Chart(ctx, {
+        type: tipo,
+        data: {
+          labels: empleados.map(e => e.nombre.split(' ')[0]),
+          datasets: [
+            {
+              label: 'Ventas',
+              data: empleados.map(e => e.ventas),
+              backgroundColor: tipo === 'doughnut' ? colores : 'rgba(0,81,135,0.7)',
+              borderColor: 'var(--primary)',
+              borderWidth: 2
+            },
+            {
+              label: 'Meta',
+              data: empleados.map(e => e.meta),
+              type: tipo === 'bar' ? 'line' : undefined,
+              borderColor: 'var(--success)',
+              borderWidth: 3,
+              fill: false,
+              pointRadius: 5
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' }
+          },
+          scales: tipo !== 'doughnut' ? { y: { beginAtZero: true } } : {}
+        }
+      });
+    }
+
+    // Ordenar tabla
+    function ordenar(columna) {
+      empleados.sort((a, b) => b[Object.keys(a)[columna]] - a[Object.keys(a)[columna]]);
+      cargarReporte();
+    }
+
+    // Filtro
+    document.getElementById('search')?.addEventListener('input', e => {
+      const term = e.target.value.toLowerCase();
+      document.querySelectorAll('#reporteTabla tbody tr').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+      });
+    });
+
+    document.getElementById('chartType').addEventListener('change', actualizarGrafico);
+
+    // Cargar al inicio
+    cargarReporte();
+
+    // Toggle modo oscuro
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    }
+  </script>
+</body>
+</html>

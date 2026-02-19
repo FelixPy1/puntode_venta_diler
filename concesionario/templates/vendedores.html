@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Empleados - Margarita Autos</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    :root {
+      --primary: #005187;
+      --primary-dark: #003d6a;
+      --primary-light: #4d82bc;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #111827;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --shadow: 0 4px 12px rgba(0,81,135,0.08);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0;
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    input, select {
+      padding: 0.7rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover { background: var(--primary-dark); }
+
+    .container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    th, td {
+      padding: 1.2rem 1.5rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: rgba(0,81,135,0.05);
+      color: var(--primary);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+    }
+
+    tr:hover { background: rgba(0,81,135,0.03); }
+
+    .progress-container {
+      background: #e5e7eb;
+      border-radius: 999px;
+      height: 10px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 999px;
+      width: 0%;
+      transition: width 0.8s ease;
+    }
+
+    .status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .cumplida { background: #ecfdf5; color: var(--success); }
+    .pendiente { background: #fef2f2; color: var(--danger); }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+    }
+
+    .modal-content {
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .close {
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .close:hover { color: var(--danger); }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    @media (max-width: 768px) {
+      table, .kpi-grid { font-size: 0.9rem; }
+      th, td { padding: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Gestión de Empleados</h1>
+    <div style="display:flex; gap:1rem; align-items:center;">
+      <input type="text" id="search" placeholder="Buscar nombre o código..." oninput="filtrarEmpleados()">
+      <button class="btn" onclick="openModal()">+ Nuevo Empleado</button>
+      <button class="btn" style="background:#64748b;" onclick="toggleTheme()">Modo Oscuro</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <table id="empleadosTable">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Ventas Mes</th>
+          <th>Comisión</th>
+          <th>Meta</th>
+          <th>Progreso</th>
+          <th>Estado Meta</th>
+        </tr>
+      </thead>
+      <tbody id="empleadosBody">
+        <!-- Empleados se agregan aquí -->
+        <tr>
+          <td colspan="7" style="text-align:center; padding:3rem; color:var(--text-muted);">
+            No hay empleados registrados. Agrega uno con el botón superior.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para agregar empleado -->
+  <div class="modal" id="modalEmpleado">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Agregar Nuevo Empleado</h2>
+        <span class="close" onclick="closeModal()">×</span>
+      </div>
+
+      <div class="form-group">
+        <label>Código / ID</label>
+        <input type="text" id="codigoEmp" placeholder="Ej: V-045">
+      </div>
+
+      <div class="form-group">
+        <label>Nombre completo</label>
+        <input type="text" id="nombreEmp" placeholder="Ej: María López">
+      </div>
+
+      <div class="form-group">
+        <label>Meta mensual (unidades)</label>
+        <input type="number" id="metaEmp" placeholder="Ej: 12" min="1">
+      </div>
+
+      <button class="btn" onclick="agregarEmpleado()" style="width:100%; margin-top:1rem;">Guardar Empleado</button>
+    </div>
+  </div>
+
+  <script>
+    // Toggle modo oscuro
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    }
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
+    // Modal
+    const modal = document.getElementById('modalEmpleado');
+
+    function openModal() {
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      if (event.target === modal) closeModal();
+    }
+
+    // Agregar empleado
+    function agregarEmpleado() {
+      const codigo = document.getElementById('codigoEmp').value || 'V-' + Math.floor(Math.random()*1000);
+      const nombre = document.getElementById('nombreEmp').value || '[Nombre pendiente]';
+      const meta = parseInt(document.getElementById('metaEmp').value) || 10;
+
+      // Datos simulados de ventas y comisión
+      const ventasMes = Math.floor(Math.random() * meta * 1.2);
+      const comision = (ventasMes * 400).toLocaleString('es-DO');
+      const progreso = Math.round((ventasMes / meta) * 100);
+      const estado = ventasMes >= meta ? 'Cumplida' : 'Pendiente';
+
+      const tbody = document.getElementById('empleadosBody');
+      const row = document.createElement('tr');
+
+      row.innerHTML = `
+        <td>${codigo}</td>
+        <td>${nombre}</td>
+        <td>${ventasMes}</td>
+        <td>$${comision}</td>
+        <td>${meta}</td>
+        <td>
+          <div style="background:#e5e7eb; border-radius:999px; height:10px; overflow:hidden;">
+            <div style="background:var(--primary); height:100%; width:${progreso}%; transition:width 0.8s;"></div>
+          </div>
+          <small>${progreso}%</small>
+        </td>
+        <td><span class="status ${estado.toLowerCase()}">${estado}</span></td>
+      `;
+
+      tbody.innerHTML = ''; // limpiar mensaje vacío
+      tbody.appendChild(row);
+
+      closeModal();
+
+      // Limpiar formulario
+      document.getElementById('codigoEmp').value = '';
+      document.getElementById('nombreEmp').value = '';
+      document.getElementById('metaEmp').value = '';
+    }
+
+    // Filtro simple
+    document.getElementById('search').addEventListener('input', filtrarEmpleados);
+
+    function filtrarEmpleados() {
+      const input = document.getElementById('search').value.toLowerCase();
+      const filas = document.querySelectorAll('#empleadosTable tbody tr');
+
+      filas.forEach(row => {
+        const texto = row.textContent.toLowerCase();
+        row.style.display = texto.includes(input) ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>
