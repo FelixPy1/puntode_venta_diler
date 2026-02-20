@@ -1,14 +1,17 @@
-from database import get_connection_supabase_client
-import supabase
+from backend.database import get_connection_supabase_client
 
 def obtener_usuario_por_email(email: str):
+    supabase = get_connection_supabase_client()
+
+    if not supabase:
+        return None
+
     response = supabase.table("usuarios") \
-        .select("id_usuario, email, password") \
+        .select("*") \
         .eq("email", email) \
         .execute()
 
     if response.data:
-        return response.data[0]  # primer usuario encontrado
-    
-    return None
+        return response.data[0]
 
+    return None

@@ -1,11 +1,15 @@
-from models.usuario_model import obtener_usuario_por_email
-from fastapi import HTTPException, status
+from fastapi import APIRouter, Form, HTTPException, status
+from fastapi.responses import RedirectResponse
+from backend.schemas.usuario_schemas import UsuarioLogin
+from backend.models.usuario_model import obtener_usuario_por_email
 
+
+router = APIRouter(
+    prefix="/auth",
+    tags=["Autenticación"]
+)
 
 def login_usuario(data):
-    """
-    Autentica un usuario por email y contraseña.
-    """
 
     if not data.email or not data.password:
         raise HTTPException(
@@ -21,15 +25,15 @@ def login_usuario(data):
             detail="Credenciales incorrectas."
         )
 
-    # Si estás usando Supabase, normalmente devuelve dict
-    # Pero si tu model devuelve tupla, mantenemos compatibilidad:
+    # 🔥 AQUÍ VA LO QUE ME PREGUNTASTE
 
     if isinstance(usuario, dict):
         id_usuario = usuario.get("id_usuario")
         email = usuario.get("email")
         password_db = usuario.get("password")
+        rol = usuario.get("rol")
     else:
-        id_usuario, email, password_db = usuario
+        id_usuario, email, password_db, rol = usuario
 
     if data.password != password_db:
         raise HTTPException(
@@ -38,7 +42,7 @@ def login_usuario(data):
         )
 
     return {
-        "mensaje": "Login exitoso",
         "id_usuario": id_usuario,
-        "email": email
+        "email": email,
+        "rol": rol
     }
