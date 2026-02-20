@@ -13,6 +13,8 @@ app.mount(
     name="static"
 )
 
+
+# Ruta principal
 @app.get("/")
-def mostrar_login(request: Request):
+async def mostrar_login(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
